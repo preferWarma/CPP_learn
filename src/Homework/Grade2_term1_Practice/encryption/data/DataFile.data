@@ -1,0 +1,10 @@
+In this tutorial, you will configure Visual Studio Code to use the GCC C++ compiler (g++) and GDB debugger on Linux. GCC stands for GNU Compiler Collection; GDB is the GNU debugger.
+After configuring VS Code, you will compile and debug a simple C++ program in VS Code. This tutorial does not teach you GCC, GDB, Ubuntu or the C++ language. For those subjects, there are many good resources available on the Web.
+If you have trouble, feel free to file an issue for this tutorial in the VS Code documentation repository.
+In this tutorial, you will configure Visual Studio Code to use the GCC C++ compiler (g++) and GDB debugger on Linux. GCC stands for GNU Compiler Collection; GDB is the GNU debugger.
+After configuring VS Code, you will compile and debug a simple C++ program in VS Code. This tutorial does not teach you GCC, GDB, Ubuntu or the C++ language. For those subjects, there are many good resources available on the Web.
+If you have trouble, feel free to file an issue for this tutorial in the VS Code documentation repository.
+The most common cause of errors (such as undefined _main, or attempting to link with file built for unknown-unsupported file format, and so on) 
+occurs when helloworld.cpp is not the active file when you start a build or start debugging. 
+This is because the compiler is trying to compile something that isn't source code, 
+like your launch.json, tasks.json, or c_cpp_properties.json file.
