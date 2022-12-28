@@ -1,6 +1,4 @@
-#include "reflect/ClassRegister.h"
-#include "test/A.h"
-#include "test/B.h"
+#include "all.h"
 
 using namespace std;
 using namespace lyf::reflect;
