@@ -5,10 +5,13 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <regex>
 
 using std::cout, std::cin, std::endl;
 using std::string, std::vector;
 using std::stringstream;
+using std::size_t;
+using std::regex, std::smatch;
 
 # define Get_Type(x) lyf::type_class<decltype(x)>::get()	// 用于获取变量类型的快捷调用宏
 
@@ -52,7 +55,7 @@ namespace lyf {
 	/// @param delim 分隔符
 	/// @return 分隔后的字符串数组, 以vector<string>形式返回
 	vector<string> split(const string& str, const string& delim) {
-		string::size_type pos1, pos2;
+		size_t pos1, pos2;
 		pos1 = 0;
 		pos2 = str.find_first_of(delim, pos1);	// 查找第一个分隔符的位置
 		vector<string> res;
@@ -66,9 +69,25 @@ namespace lyf {
 		return res;
 	}
 
+	/// @brief 以正则表达式匹配字符串
+	/// @param str 要匹配的字符串
+	/// @param pattern 要匹配的正则表达式
+	/// @return 匹配后的字符串数组, 以vector<string>形式返回
+	vector<string> regex_match(const string& str, const regex& pattern) {
+		auto word_begin = std::sregex_iterator(str.begin(), str.end(), pattern);
+		auto word_end = std::sregex_iterator();
+		vector<string> res;
+		for (auto i = word_begin; i != word_end; ++i) {
+			smatch match = *i;
+			res.emplace_back(match.str());
+		}
+		return res;
+	}
+
+#if __cplusplus >= 201703L	// C++17以上才编译
 	/// @brief 形参包遍历打印元素(C++17以后)
 	template<typename T, typename ...Args>
-	void print(T&& v, Args&&... args) {
+	void print_args(T&& v, Args&&... args) {
 		cout << v << " ";
 		if constexpr (sizeof...(args) > 0) {
 			print(std::forward<Args>(args)...);
@@ -76,6 +95,18 @@ namespace lyf {
 		else {
 			cout << endl;
 		}
+	}
+#endif
+	
+	/// @brief 以迭代器方式遍历容器元素
+	/// @param v 要遍历的容器
+	/// @param delim 每个元素之间的分隔符
+	template<typename T>
+	void print_container(const T& v, const string delim) {
+		for (auto&& i : v) {
+			cout << i << delim;
+		}
+		cout << endl;
 	}
 
 }
