@@ -11,7 +11,7 @@ using std::cout, std::cin, std::endl;
 using std::string, std::vector;
 using std::stringstream;
 using std::size_t;
-using std::regex, std::smatch;
+using std::regex, std::smatch, std::sregex_iterator;
 
 # define Get_Type(x) lyf::type_class<decltype(x)>::get()	// 用于获取变量类型的快捷调用宏
 
@@ -74,8 +74,8 @@ namespace lyf {
 	/// @param pattern 要匹配的正则表达式
 	/// @return 匹配后的字符串数组, 以vector<string>形式返回
 	vector<string> regex_match(const string& str, const regex& pattern) {
-		auto word_begin = std::sregex_iterator(str.begin(), str.end(), pattern);
-		auto word_end = std::sregex_iterator();
+		auto word_begin = sregex_iterator(str.begin(), str.end(), pattern);
+		auto word_end = sregex_iterator();
 		vector<string> res;
 		for (auto i = word_begin; i != word_end; ++i) {
 			smatch match = *i;
