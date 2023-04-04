@@ -90,14 +90,14 @@ namespace lyf {
 	void print_args(T&& v, Args&&... args) {
 		cout << v << " ";
 		if constexpr (sizeof...(args) > 0) {
-			print(std::forward<Args>(args)...);
+			print_args(std::forward<Args>(args)...);
 		}
 		else {
 			cout << endl;
 		}
 	}
 #endif
-	
+
 	/// @brief 以迭代器方式遍历容器元素
 	/// @param v 要遍历的容器
 	/// @param delim 每个元素之间的分隔符
