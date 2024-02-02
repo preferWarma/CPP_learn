@@ -18,7 +18,7 @@ public:
 	}
 
 	// 打印单例的地址
-	void print() {
+	void printAdress() {
 		std::cout << this << std::endl;
 	}
 
@@ -52,7 +52,7 @@ private:
 
 int main() {
 	for (int i = 0; i < 10; i++) {
-		Test::GetInstance().print();
+		Test::GetInstance().printAdress();
 	}
 	Test::GetInstance().input();
 	Test::GetInstance().print();
