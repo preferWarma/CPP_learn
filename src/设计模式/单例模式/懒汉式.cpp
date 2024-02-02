@@ -8,7 +8,7 @@ using std::cin, std::cout, std::endl;
 using std::string, std::vector, std::pair;
 
 template <typename T>
-class Singleton {
+class Singleton {	// 泛型单例
 public:
 	// 获取单例实例对象
 	static T& GetInstance() {
@@ -19,7 +19,7 @@ public:
 
 	// 打印单例的地址
 	void printAdress() {
-		std::cout << this << std::endl;
+		cout << this << endl;
 	}
 
 	// 禁止外部拷贝或赋值
@@ -41,7 +41,7 @@ public:
 		}
 	}
 
-	void print() {
+	void output() {
 		for (auto& data : m_data) {
 			cout << data.first << " " << data.second << endl;
 		}
@@ -52,9 +52,10 @@ private:
 
 int main() {
 	for (int i = 0; i < 10; i++) {
-		Test::GetInstance().printAdress();
+		Singleton<Test>::GetInstance().printAdress();
 	}
-	Test::GetInstance().input();
-	Test::GetInstance().print();
+
+	Singleton<Test>::GetInstance().input();
+	Singleton<Test>::GetInstance().output();
 	return 0;
 }
