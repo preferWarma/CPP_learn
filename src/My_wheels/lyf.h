@@ -84,6 +84,37 @@ namespace lyf {
 		return res;
 	}
 
+	/// @brief 替换字符串中的第一个指定子串
+	/// @param str 要替换的字符串
+	/// @param old_value 要替换的子串
+	/// @param new_value 替换后的子串
+	/// @return 替换后的字符串
+	string replace_first(const string& str, const string& old_value, const string& new_value) {
+		string res = str;
+		auto pos = res.find(old_value);
+		if (pos != string::npos) {
+			return res.replace(pos, old_value.length(), new_value);
+		}
+		else return str;
+	}
+
+	/// @brief 替换字符串中的所有指定子串
+	/// @param str 要替换的字符串
+	/// @param old_value 要替换的子串
+	/// @param new_value 替换后的子串
+	/// @return 替换后的字符串
+	string replace_all(const string& str, const string& old_value, const string& new_value) {
+		string res = str;
+		for (size_t pos = 0; pos != string::npos; pos += new_value.length()) {
+			pos = res.find(old_value, pos);
+			if (pos != string::npos) {
+				res.replace(pos, old_value.length(), new_value);
+			}
+			else break;
+		}
+		return res;
+	}
+
 #if __cplusplus >= 201703L	// C++17以上才编译
 	/// @brief 形参包遍历打印元素(C++17以后)
 	template<typename T, typename ...Args>
