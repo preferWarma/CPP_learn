@@ -8,8 +8,7 @@
 #include <regex>
 
 using std::cout, std::cin, std::endl;
-using std::string, std::vector;
-using std::stringstream;
+using std::string, std::vector, std::stringstream;
 using std::size_t;
 using std::regex, std::smatch, std::sregex_iterator;
 
@@ -27,7 +26,7 @@ namespace lyf {
 	public:
 		// 获取变量类型(依赖于typeid关键字)
 		static string get() {
-			string all_realName = string{abi::__cxa_demangle(typeid(cvr_saver<T>).name(), nullptr, nullptr, nullptr)};	// 包含cuv_saver结构体的全名
+			string all_realName = string{ abi::__cxa_demangle(typeid(cvr_saver<T>).name(), nullptr, nullptr, nullptr) };	// 包含cuv_saver结构体的全名
 			auto pos1 = all_realName.find_first_of('<') + 1;	// 第一个'<'后的位置
 			auto pos2 = all_realName.find_last_of('>');	// 最后一个'>'的位置
 			string realName = all_realName.substr(pos1, pos2 - pos1);	// 去掉干扰信息
@@ -55,9 +54,8 @@ namespace lyf {
 	/// @param delim 分隔符
 	/// @return 分隔后的字符串数组, 以vector<string>形式返回
 	vector<string> split(const string& str, const string& delim) {
-		size_t pos1, pos2;
-		pos1 = 0;
-		pos2 = str.find_first_of(delim, pos1);	// 查找第一个分隔符的位置
+		size_t pos1 = 0;
+		size_t pos2 = str.find_first_of(delim, pos1);	// 查找第一个分隔符的位置
 		vector<string> res;
 		while (string::npos != pos2) {
 			res.push_back(str.substr(pos1, pos2 - pos1));
@@ -115,16 +113,32 @@ namespace lyf {
 		return res;
 	}
 
+	string replace_last(const string& str, const string& old_value, const string& new_value) {
+		string res = str;
+		auto pos = res.rfind(old_value);
+		if (pos != string::npos) {
+			return res.replace(pos, old_value.length(), new_value);
+		}
+		else return str;
+	}
+
 #if __cplusplus >= 201703L	// C++17以上才编译
+	/// @brief 用于print_args的分隔符, 默认为空格, 单次使用, 调用后会被重置, 可以通过设置delimIsPersist为true使其持久化
+	static string printDelim = " ";
+	/// @brief 分隔符是否持久化, 默认不持久化
+	static bool delimIsPersist = false;
+
 	/// @brief 形参包遍历打印元素(C++17以后)
 	template<typename T, typename ...Args>
 	void print_args(T&& v, Args&&... args) {
-		cout << v << " ";
+		cout << v << printDelim;
 		if constexpr (sizeof...(args) > 0) {
 			print_args(std::forward<Args>(args)...);
 		}
 		else {
 			cout << endl;
+			if (!delimIsPersist)
+				printDelim = " ";	// 恢复默认分隔符
 		}
 	}
 #endif
@@ -133,11 +147,20 @@ namespace lyf {
 	/// @param v 要遍历的容器
 	/// @param delim 每个元素之间的分隔符
 	template<typename T>
-	void print_container(const T& v, const string delim) {
-		for (auto&& i : v) {
+	void print_container(const T& v, const string& delim = " ") {
+		for (const auto& i : v) {
 			cout << i << delim;
 		}
 		cout << endl;
 	}
 
+	template<class T1, class T2>
+	auto max(T1&& a, T2&& b) {
+		return a > b ? a : b;
+	}
+
+	template<class T1, class T2>
+	auto min(T1&& a, T2&& b) {
+		return a < b ? a : b;
+	}
 }
