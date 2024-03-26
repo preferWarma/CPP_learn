@@ -23,7 +23,7 @@ int main() {
     // 正则表达式匹配
     string pattern = R"(\d{3,4}-\d{7,8})";
     string text = "电话号码: 010-12345678, 021-87654321";
-    auto regex_res = regex_match(text, regex{ pattern });
+    auto regex_res = regex_match(text, pattern);
     print_container(regex_res, "\n");
 
     // 字符串替换

@@ -71,8 +71,9 @@ namespace lyf {
 	/// @param str 要匹配的字符串
 	/// @param pattern 要匹配的正则表达式
 	/// @return 匹配后的字符串数组, 以vector<string>形式返回
-	vector<string> regex_match(const string& str, const regex& pattern) {
-		auto word_begin = sregex_iterator(str.begin(), str.end(), pattern);
+	vector<string> regex_match(const string& str, const string& pattern) {
+		regex m_pattern{ pattern };
+		auto word_begin = sregex_iterator(str.begin(), str.end(), m_pattern);
 		auto word_end = sregex_iterator();
 		vector<string> res;
 		for (auto i = word_begin; i != word_end; ++i) {
