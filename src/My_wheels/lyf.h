@@ -12,7 +12,7 @@ using std::string, std::vector, std::stringstream;
 using std::size_t;
 using std::regex, std::smatch, std::sregex_iterator;
 
-# define Get_Type(x) lyf::type_class<decltype(x)>::get()	// 用于获取变量类型的快捷调用宏
+# define typeof(x) lyf::type_class<decltype(x)>::get()	// 用于获取变量类型的快捷调用宏
 
 namespace lyf {
 
@@ -163,4 +163,29 @@ namespace lyf {
 	auto min(T1&& a, T2&& b) {
 		return a < b ? a : b;
 	}
+
+	template <typename T>
+	class Singleton {	// 泛型单例
+	public:
+		// 获取单例实例对象
+		static T& GetInstance() {
+			// 利用局部静态变量实现单例
+			static T instance;
+			return instance;
+		}
+
+		// 打印单例的地址
+		void printAdress() {
+			cout << this << endl;
+		}
+
+		// 禁止外部拷贝或赋值
+		Singleton(const Singleton&) = delete;
+		Singleton& operator=(const Singleton&) = delete;
+
+	protected:
+		// 禁止外部构造和析构
+		Singleton() = default;
+		~Singleton() = default;
+	};
 }
