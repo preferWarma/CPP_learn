@@ -36,6 +36,12 @@ int main() {
     lyf::delimIsPersist = true; // 设置分隔符持久化
     print_args(res2, res3, res4);
 
+    // beginWith和endWith
+    cout << begin_with(str, "hello") << endl;
+    cout << begin_with(str, "world") << endl;
+    cout << end_with(str, "world") << endl;
+    cout << end_with(str, "world!") << endl;
+
     // 通用单例模式
     Singleton<Foo>::GetInstance().print();  // 显式表达
     Foo::GetInstance().printAdress();   // 简单表达

@@ -1,4 +1,5 @@
-#pragma once	// 防止重复包含
+#ifndef LYF_H
+#define LYF_H
 
 #include <cxxabi.h>
 #include <iostream>
@@ -12,7 +13,7 @@ using std::string, std::vector, std::stringstream;
 using std::size_t;
 using std::regex, std::smatch, std::sregex_iterator;
 
-# define typeof(x) lyf::type_class<decltype(x)>::get()	// 用于获取变量类型的快捷调用宏
+#define typeof(x) lyf::type_class<decltype(x)>::get()	// 用于获取变量类型的快捷调用宏
 
 namespace lyf {
 
@@ -114,6 +115,11 @@ namespace lyf {
 		return res;
 	}
 
+	/// @brief 替换字符串中的最后一个指定子串
+	/// @param str 要替换的字符串
+	/// @param old_value 要替换的子串
+	/// @param new_value 替换后的子串
+	/// @return 替换后的字符串
 	string replace_last(const string& str, const string& old_value, const string& new_value) {
 		string res = str;
 		auto pos = res.rfind(old_value);
@@ -121,6 +127,31 @@ namespace lyf {
 			return res.replace(pos, old_value.length(), new_value);
 		}
 		else return str;
+	}
+
+	/// @brief 判断字符串是否以指定前缀开头
+	/// @param str 要判断的字符串
+	/// @param prefix 前缀字符串
+	/// @return 是否以指定前缀开头
+	bool begin_with(const string& str, const string& prefix) {
+		for (size_t i = 0; i < prefix.size(); ++i) {
+			if (str[i] != prefix[i]) return false;
+		}
+		return true;
+	}
+
+	/// @brief 判断字符串是否以指定后缀结尾
+	/// @param str 要判断的字符串
+	/// @param suffix 后缀字符串
+	/// @return 是否以指定后缀结尾
+	bool end_with(const string& str, const string& suffix) {
+		size_t str_len = str.size();
+		size_t suffix_len = suffix.size();
+		if (str_len < suffix_len) return false;
+		for (size_t i = 0; i < suffix_len; ++i) {
+			if (str[str_len - suffix_len + i] != suffix[i]) return false;
+		}
+		return true;
 	}
 
 #if __cplusplus >= 201703L	// C++17以上才编译
@@ -190,3 +221,5 @@ namespace lyf {
 		~Singleton() = default;
 	};
 }
+
+#endif // LYF_H
