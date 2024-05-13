@@ -1,4 +1,5 @@
-#pragma once
+#ifndef REFLECT_HPP
+#define REFLECT_HPP
 
 #include <any>
 #include <functional>
@@ -245,3 +246,5 @@ namespace reflect {
     void ClearRegistry();
 
 }  // namespace reflect
+
+#endif  // REFLECT_HPP
