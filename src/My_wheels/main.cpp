@@ -18,7 +18,7 @@ int main() {
 
     // 字符串分割
     auto res = split(str, ' ');
-    print_container(res, "\n"); // 容器快捷打印
+    print_container(res, "\n"); // 容器快捷打印(基于迭代器和operator<<重载)
 
     // 正则表达式匹配
     string pattern = R"(\d{3,4}-\d{7,8})";
@@ -47,9 +47,11 @@ int main() {
     Foo::GetInstance().printAdress();   // 简单表达
     Singleton<Foo>::GetInstance().printAdress();
 
-    // 通用max和min, 类型推导宏typeof
-    cout << typeof(max(1, 1.5f)) << endl;
-    cout << typeof(min(1, 1.5)) << endl;
+    // 通用多参数max和min
+    cout << max(1, 1.5f, -5.0, 8.8, 'a', 'b') << endl;
+    cout << min(1, 1.5f, -5.0, 8.8, 'a', 'b') << endl;
+
+    // 类型推导宏typeof
     cout << typeof(Singleton<Foo>::GetInstance()) << endl;
 
     return 0;

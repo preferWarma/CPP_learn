@@ -188,12 +188,22 @@ namespace lyf {
 
 	template<class T1, class T2>
 	auto max(T1&& a, T2&& b) {
-		return a > b ? a : b;
+		return a > b ? std::forward<T1>(a) : std::forward<T2>(b);
+	}
+
+	template<class T, class... Args>
+	auto max(T&& a, Args&&... args) {
+		return max(std::forward<T>(a), max(std::forward<Args>(args)...));
 	}
 
 	template<class T1, class T2>
 	auto min(T1&& a, T2&& b) {
-		return a < b ? a : b;
+		return a < b ? std::forward<T1>(a) : std::forward<T2>(b);
+	}
+
+	template<class T, class... Args>
+	auto min(T&& a, Args&&... args) {
+		return min(std::forward<T>(a), min(std::forward<Args>(args)...));
 	}
 
 	template <typename T>
@@ -213,7 +223,9 @@ namespace lyf {
 
 		// 禁止外部拷贝或赋值
 		Singleton(const Singleton&) = delete;
+		Singleton(Singleton&&) = delete;
 		Singleton& operator=(const Singleton&) = delete;
+		Singleton& operator=(Singleton&&) = delete;
 
 	protected:
 		// 禁止外部构造和析构
