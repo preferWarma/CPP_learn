@@ -1,6 +1,8 @@
 #include "lyf.h"
 
 using namespace lyf;
+using namespace lyf::StringTool;
+using namespace lyf::PrintTool;
 using namespace std;
 
 // 通用单例模式测试类
@@ -10,7 +12,17 @@ public:
         cout << this->str << endl;
     }
 private:
-    string str = "Hello, world!";
+    string str = "Hello, Foo!";
+};
+
+// 通用单例模式测试类
+class Foo2 : public Singleton<Foo2> {
+public:
+    void print() {
+        cout << this->str << endl;
+    }
+private:
+    string str = "Hello, Foo2!";
 };
 
 int main() {
@@ -20,11 +32,15 @@ int main() {
     auto res = split(str, ' ');
     print_container(res, "\n"); // 容器快捷打印(基于迭代器和operator<<重载)
 
+    cout << "--------------------------------" << endl;
+
     // 正则表达式匹配
     string pattern = R"(\d{3,4}-\d{7,8})";
     string text = "电话号码: 010-12345678, 021-87654321";
     auto regex_res = regex_match(text, pattern);
     print_container(regex_res, "\n");
+
+    cout << "--------------------------------" << endl;
 
     // 字符串替换
     auto res2 = replace_first(str, "world", "lyf");
@@ -32,24 +48,37 @@ int main() {
     auto res4 = replace_all(str, "world", "WHU");
 
     // 参数打印
-    lyf::printDelim = "\n"; // 设置分隔符
-    lyf::delimIsPersist = true; // 设置分隔符持久化
+    PrintTool::printDelim = "\n"; // 设置分隔符
+    PrintTool::delimIsPersist = true; // 设置分隔符持久化
     print_args(res2, res3, res4);
 
+    cout << "--------------------------------" << endl;
+
     // beginWith和endWith
-    cout << begin_with(str, "hello") << endl;
-    cout << begin_with(str, "world") << endl;
-    cout << end_with(str, "world") << endl;
-    cout << end_with(str, "world!") << endl;
+    cout << std::boolalpha << begin_with(str, "hello") << endl;
+    cout << std::boolalpha << begin_with(str, "world") << endl;
+    cout << std::boolalpha << end_with(str, "world") << endl;
+    cout << std::boolalpha << end_with(str, "world!") << endl;
+
+    cout << "--------------------------------" << endl;
 
     // 通用单例模式
-    Singleton<Foo>::GetInstance().print();  // 显式表达
-    Foo::GetInstance().printAdress();   // 简单表达
+    Singleton<Foo>::GetInstance().print();  // 也可以用Foo::GetInstance().print();
+    Foo2::GetInstance().print(); // 也可以用Singleton<Foo2>::GetInstance().print();
+    // 两次打印地址相同, 说明是同一个对象
     Singleton<Foo>::GetInstance().printAdress();
+    Foo::GetInstance().printAdress();
+    // 两次打印地址相同, 说明是同一个对象
+    Foo2::GetInstance().printAdress();
+    Singleton<Foo2>::GetInstance().printAdress();
+
+    cout << "--------------------------------" << endl;
 
     // 通用多参数max和min
     cout << max(1, 1.5f, -5.0, 8.8, 'a', 'b') << endl;
     cout << min(1, 1.5f, -5.0, 8.8, 'a', 'b') << endl;
+
+    cout << "--------------------------------" << endl;
 
     // 类型推导宏typeof
     cout << typeof(Singleton<Foo>::GetInstance()) << endl;
