@@ -40,7 +40,7 @@ namespace lyf {
 		/// @param str 要分隔的字符串
 		/// @param delim 分隔符
 		/// @return 分隔后的字符串数组, 以vector<string>形式返回
-		static vector<string> split(const string& str, const char delim) {
+		vector<string> split(const string& str, const char delim) {
 			stringstream ss(str);
 			string s;
 			vector<string> res;
@@ -55,7 +55,7 @@ namespace lyf {
 		/// @param str 要分隔的字符串
 		/// @param delim 分隔符
 		/// @return 分隔后的字符串数组, 以vector<string>形式返回
-		static vector<string> split(const string& str, const string& delim) {
+		vector<string> split(const string& str, const string& delim) {
 			size_t pos1 = 0;
 			size_t pos2 = str.find_first_of(delim, pos1);	// 查找第一个分隔符的位置
 			vector<string> res;
@@ -73,7 +73,7 @@ namespace lyf {
 		/// @param str 要匹配的字符串
 		/// @param pattern 要匹配的正则表达式
 		/// @return 匹配后的字符串数组, 以vector<string>形式返回
-		static vector<string> regex_match(const string& str, const string& pattern) {
+		vector<string> regex_match(const string& str, const string& pattern) {
 			regex m_pattern{ pattern };
 			auto word_begin = sregex_iterator(str.begin(), str.end(), m_pattern);
 			auto word_end = sregex_iterator();
@@ -90,7 +90,7 @@ namespace lyf {
 		/// @param old_value 要替换的子串
 		/// @param new_value 替换后的子串
 		/// @return 替换后的字符串
-		static string replace_first(const string& str, const string& old_value, const string& new_value) {
+		string replace_first(const string& str, const string& old_value, const string& new_value) {
 			string res = str;
 			auto pos = res.find(old_value);
 			if (pos != string::npos) {
@@ -104,7 +104,7 @@ namespace lyf {
 		/// @param old_value 要替换的子串
 		/// @param new_value 替换后的子串
 		/// @return 替换后的字符串
-		static string replace_all(const string& str, const string& old_value, const string& new_value) {
+		string replace_all(const string& str, const string& old_value, const string& new_value) {
 			string res = str;
 			for (size_t pos = 0; pos != string::npos; pos += new_value.length()) {
 				pos = res.find(old_value, pos);
@@ -121,7 +121,7 @@ namespace lyf {
 		/// @param old_value 要替换的子串
 		/// @param new_value 替换后的子串
 		/// @return 替换后的字符串
-		static string replace_last(const string& str, const string& old_value, const string& new_value) {
+		string replace_last(const string& str, const string& old_value, const string& new_value) {
 			string res = str;
 			auto pos = res.rfind(old_value);
 			if (pos != string::npos) {
@@ -134,7 +134,7 @@ namespace lyf {
 		/// @param str 要判断的字符串
 		/// @param prefix 前缀字符串
 		/// @return 是否以指定前缀开头
-		static bool begin_with(const string& str, const string& prefix) {
+		bool begin_with(const string& str, const string& prefix) {
 			for (size_t i = 0; i < prefix.size(); ++i) {
 				if (str[i] != prefix[i]) return false;
 			}
@@ -145,7 +145,7 @@ namespace lyf {
 		/// @param str 要判断的字符串
 		/// @param suffix 后缀字符串
 		/// @return 是否以指定后缀结尾
-		static bool end_with(const string& str, const string& suffix) {
+		bool end_with(const string& str, const string& suffix) {
 			size_t str_len = str.size();
 			size_t suffix_len = suffix.size();
 			if (str_len < suffix_len) return false;
@@ -165,7 +165,7 @@ namespace lyf {
 
 		/// @brief 形参包遍历打印元素(C++17以后)
 		template<typename T, typename ...Args>
-		static void print_args(T&& v, Args&&... args) {
+		void print_args(T&& v, Args&&... args) {
 			cout << v << printDelim;
 			if constexpr (sizeof...(args) > 0) {
 				print_args(std::forward<Args>(args)...);
@@ -182,7 +182,7 @@ namespace lyf {
 		/// @param v 要遍历的容器
 		/// @param delim 每个元素之间的分隔符
 		template<typename T>
-		static void print_container(const T& v, const string& delim = " ") {
+		void print_container(const T& v, const string& delim = " ") {
 			for (const auto& i : v) {
 				cout << i << delim;
 			}
