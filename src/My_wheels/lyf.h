@@ -210,6 +210,43 @@ namespace lyf {
 		return min(std::forward<T>(a), min(std::forward<Args>(args)...));
 	}
 
+	/// @brief 基于迭代器的范围比较模板函数
+	/// @param first 第一个迭代器(包含)
+	/// @param last 最后一个迭代器(不包含)
+	/// @param comp 比较函数
+	/// @return 范围内按照比较函数比较后的最大值
+	template<class Iterator, class Compare>
+	auto range_compare(Iterator first, Iterator last, Compare comp = Compare()) -> typename std::iterator_traits<Iterator>::value_type {
+		if (first == last) {
+			throw std::invalid_argument("Range cannot be empty");
+		}
+		auto maxValue = *first;
+		for (Iterator it = std::next(first); it != last; ++it) {
+			if (comp(maxValue, *it)) {
+				maxValue = *it;
+			}
+		}
+		return maxValue;
+	}
+
+	/// @brief 基于迭代器的范围最大值模板函数
+	/// @param first 第一个迭代器(包含)
+	/// @param last 最后一个迭代器(不包含)
+	/// @return 范围内的最大值
+	template<class Iterator>
+	auto range_max(Iterator first, Iterator last) {
+		return range_compare(first, last, std::less<typename std::iterator_traits<Iterator>::value_type>());
+	}
+
+	/// @brief 基于迭代器的范围最小值模板函数
+	/// @param first 第一个迭代器(包含)
+	/// @param last 最后一个迭代器(不包含)
+	/// @return 范围内的最小值
+	template<class Iterator>
+	auto range_min(Iterator first, Iterator last) {
+		return range_compare(first, last, std::greater<typename std::iterator_traits<Iterator>::value_type>());
+	}
+
 	template <typename T>
 	class Singleton {	// 泛型单例
 	public:
