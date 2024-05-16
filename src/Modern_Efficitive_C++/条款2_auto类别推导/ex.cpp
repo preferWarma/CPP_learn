@@ -23,10 +23,10 @@ int main() {
 	auto x3 = {27};
 	auto x4{27};
 
-	std::cout << Get_Type(x1) << std::endl;
-	std::cout << Get_Type(x2) << std::endl;
-	std::cout << Get_Type(x3) << std::endl;
-	std::cout << Get_Type(x4) << std::endl;
+	std::cout << typeof(x1) << std::endl;
+	std::cout << typeof(x2) << std::endl;
+	std::cout << typeof(x3) << std::endl;
+	std::cout << typeof(x4) << std::endl;
 
 	return 0;
 }

@@ -4,13 +4,13 @@
 template<typename T>
 void f(T param) {
 	std::cout << "T: " << lyf::type_class<T>::get()
-		<< "\tparam: " << Get_Type(param) << std::endl;
+		<< "\tparam: " << typeof(param) << std::endl;
 }
 
 template<typename T>
 void f1(T& param) {
 	std::cout << "T: " << lyf::type_class<T>::get()
-		<< "\tparam: " << Get_Type(param) << std::endl;
+		<< "\tparam: " << typeof(param) << std::endl;
 }
 
 void someFunc(int, double) {}

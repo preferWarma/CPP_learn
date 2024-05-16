@@ -11,6 +11,6 @@ vector<bool> getFeatures(const Widget w) {
 
 int main() {
 	auto priority = getFeatures(Widget{})[5];
-	cout << Get_Type(priority) << endl;
+	cout << typeof(priority) << endl;
 	return 0;
 }
