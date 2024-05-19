@@ -25,16 +25,24 @@ private:
     string str = "Hello, Foo2!";
 };
 
+// 控制台颜色控制器
+ConsoleColor colorController;
+void printWithBlueText(string_view str) {
+    colorController.SetColor(ConsoleColor::TextColor::IntenseBlue, ConsoleColor::BackgroundColor::Black);
+    cout << str << endl;
+    colorController.ResetColor();
+}
+
 int main() {
     string str = "hello world!";
 
-    cout << "----------字符串分割------------\n" << endl;
+    printWithBlueText("--------字符串分割-----------\n");
 
     // 字符串分割
     auto res = split(str, ' ');
     print_container(res, "\n"); // 容器快捷打印(基于迭代器和operator<<重载)
 
-    cout << "--------正则表达式匹配-----------\n" << endl;
+    printWithBlueText("--------正则表达式匹配-----------\n");
 
     // 正则表达式匹配
     string pattern = R"(\d{3,4}-\d{7,8})";
@@ -42,7 +50,7 @@ int main() {
     auto regex_res = regex_match(text, pattern);
     print_container(regex_res, "\n");
 
-    cout << "-----字符串替换与参数打印--------\n" << endl;
+    printWithBlueText("-----字符串替换与参数打印--------\n");
 
     // 字符串替换
     auto res2 = replace_first(str, "world", "lyf");
@@ -54,7 +62,7 @@ int main() {
     PrintTool::delimIsPersist = true; // 设置分隔符持久化
     print_args(res2, res3, res4);
 
-    cout << "------beginWith和endWith--------\n" << endl;
+    printWithBlueText("------beginWith和endWith--------\n");
 
     // beginWith和endWith
     cout << std::boolalpha << begin_with(str, "hello") << endl;
@@ -62,7 +70,7 @@ int main() {
     cout << std::boolalpha << end_with(str, "world") << endl;
     cout << std::boolalpha << end_with(str, "world!") << endl;
 
-    cout << "\n---------通用单例模式------------\n" << endl;
+    printWithBlueText("\n--------通用单例模式-----------\n");
 
     // 通用单例模式
     Singleton<Foo>::GetInstance().print();  // 也可以用Foo::GetInstance().print();
@@ -74,7 +82,7 @@ int main() {
     Foo2::GetInstance().printAdress();
     Singleton<Foo2>::GetInstance().printAdress();
 
-    cout << "\n--通用多参数max和min和范围比较函数--\n" << endl;
+    printWithBlueText("\n--------通用多参数max和min和范围比较函数-----------\n");
 
     // 通用多参数max和min和范围比较函数
     cout << max(1, 1.5f, -5.0, 8.8, 'a', 'b') << endl;
@@ -85,13 +93,12 @@ int main() {
     cout << range_min(vec.begin(), vec.end()) << endl;
     cout << range_compare(vec.begin(), vec.end(), [](int a, int b) { return a < b; }) << endl;  // 等价于求最大值
 
-    cout << "\n---------类型推导宏typeof---------\n" << endl;
+    printWithBlueText("\n--------类型推导宏typeof-----------\n");
 
     // 类型推导宏typeof
     cout << typeof(Singleton<Foo>::GetInstance()) << endl;
 
-
-    cout << "\n---------------lyf-----------------\n" << endl;
+    printWithBlueText("\n----------------lyf---------------\n");
 
     return 0;
 }

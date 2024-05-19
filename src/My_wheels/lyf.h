@@ -8,6 +8,10 @@
 #include <sstream>
 #include <regex>
 
+#ifdef _WIN32
+#include <windows.h>	// Windows下的控制台颜色设置
+#endif
+
 using std::cout, std::cin, std::endl;
 using std::string, std::vector, std::stringstream;
 using std::size_t;
@@ -188,6 +192,67 @@ namespace lyf {
 			}
 			cout << endl;
 		}
+
+#ifdef _WIN32
+		struct ConsoleColor {
+			enum class TextColor {
+				Black = 0x0,
+				Blue = 0x1,
+				Green = 0x2,
+				Cyan = 0x3,
+				Red = 0x4,
+				Magenta = 0x5,
+				Yellow = 0x6,
+				White = 0x7,
+				Grey = 0x8,
+				IntenseBlue = 0x9,
+				IntenseGreen = 0xA,
+				IntenseCyan = 0xB,
+				IntenseRed = 0xC,
+				IntenseMagenta = 0xD,
+				IntenseYellow = 0xE,
+				IntenseWhite = 0xF
+			};
+
+			enum class BackgroundColor {
+				Black = 0x00,
+				Blue = 0x10,
+				Green = 0x20,
+				Cyan = 0x30,
+				Red = 0x40,
+				Magenta = 0x50,
+				Yellow = 0x60,
+				White = 0x70,
+				Grey = 0x80,
+				IntenseBlue = 0x90,
+				IntenseGreen = 0xA0,
+				IntenseCyan = 0xB0,
+				IntenseRed = 0xC0,
+				IntenseMagenta = 0xD0,
+				IntenseYellow = 0xE0,
+				IntenseWhite = 0xF0
+			};
+
+			/// @brief 构造时获取控制台句柄
+			ConsoleColor() : hConsole(GetStdHandle(STD_OUTPUT_HANDLE)) {}
+
+			/// @brief 设置控制台文本颜色和背景颜色
+			/// @param textColor 文本颜色
+			/// @param backgroundColor 背景颜色(默认为黑色)
+			void SetColor(TextColor textColor, BackgroundColor backgroundColor = BackgroundColor::Black) {
+				SetConsoleTextAttribute(hConsole, static_cast<WORD>(textColor) | static_cast<WORD>(backgroundColor));
+			}
+
+			/// @brief 重置控制台文本颜色和背景颜色(白色文本, 黑色背景)
+			void ResetColor() {
+				SetConsoleTextAttribute(hConsole, static_cast<WORD>(TextColor::White) | static_cast<WORD>(BackgroundColor::Black));
+			}
+
+		private:
+			HANDLE hConsole;
+		};
+#endif
+
 	};	// namespace PrintTool
 
 	template<class T1, class T2>
