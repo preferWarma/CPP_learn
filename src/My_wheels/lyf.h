@@ -12,14 +12,13 @@
 #include <windows.h>	// Windows下的控制台颜色设置
 #endif
 
-using std::cout, std::cin, std::endl;
-using std::string, std::vector, std::stringstream;
-using std::size_t;
-using std::regex, std::smatch, std::sregex_iterator;
-
 #define typeof(x) lyf::type_class<decltype(x)>::get()	// 用于获取变量类型的快捷调用宏
 
 namespace lyf {
+	using std::cout, std::cin, std::endl;
+	using std::string, std::vector, std::stringstream;
+	using std::size_t;
+	using std::regex, std::smatch, std::sregex_iterator;
 
 	template<typename Helper>
 	struct cvr_saver {};	// 用于保存变量的const/volatile/reference属性
@@ -194,7 +193,8 @@ namespace lyf {
 		}
 
 #ifdef _WIN32
-		struct ConsoleColor {
+		class ConsoleColor {
+		public:
 			enum class TextColor {
 				Black = 0x0,
 				Blue = 0x1,
@@ -246,6 +246,12 @@ namespace lyf {
 			/// @brief 重置控制台文本颜色和背景颜色(白色文本, 黑色背景)
 			void ResetColor() {
 				SetConsoleTextAttribute(hConsole, static_cast<WORD>(TextColor::White) | static_cast<WORD>(BackgroundColor::Black));
+			}
+
+			void printWithColorOneLine(std::string_view str, TextColor textColor, BackgroundColor backgroundColor = BackgroundColor::Black) {
+				SetColor(textColor, backgroundColor);
+				cout << str;
+				ResetColor();
 			}
 
 		private:
@@ -338,6 +344,15 @@ namespace lyf {
 		Singleton() = default;
 		~Singleton() = default;
 	};
-}
+
+	/// @brief 运行时断言函数, 若condition为false, 则抛出异常
+	/// @param condition 断言条件 
+	/// @param what 异常信息
+	inline void assure(bool condition, std::string_view what = "Assertion failed!") {
+		if (!condition) {
+			throw std::runtime_error{ what.data() };
+		}
+	}
+}	// namespace lyf
 
 #endif // LYF_H

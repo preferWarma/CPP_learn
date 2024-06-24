@@ -6,31 +6,16 @@ using namespace lyf::PrintTool;
 using namespace std;
 
 // 通用单例模式测试类
-class Foo : public Singleton<Foo> {
-public:
-    void print() {
-        cout << this->str << endl;
-    }
-private:
-    string str = "Hello, Foo!";
-};
+class Foo : public Singleton<Foo> {};
 
 // 通用单例模式测试类
-class Foo2 : public Singleton<Foo2> {
-public:
-    void print() {
-        cout << this->str << endl;
-    }
-private:
-    string str = "Hello, Foo2!";
-};
+class Foo2 {};
 
-// 控制台颜色控制器
-ConsoleColor colorController;
 void printWithBlueText(string_view str) {
-    colorController.SetColor(ConsoleColor::TextColor::IntenseBlue, ConsoleColor::BackgroundColor::Black);
-    cout << str << endl;
-    colorController.ResetColor();
+    // 使用单例模式打印蓝色文本(ConsloeColor没有继承Singleton, 
+    // 此方法不推荐使用, 只是为了展示效果简便使用, 推荐使用继承Singleton的方式)
+    Singleton<ConsoleColor>::GetInstance()
+        .printWithColorOneLine(str, ConsoleColor::TextColor::IntenseBlue);
 }
 
 int main() {
@@ -73,14 +58,22 @@ int main() {
     printWithBlueText("\n--------通用单例模式-----------\n");
 
     // 通用单例模式
-    Singleton<Foo>::GetInstance().print();  // 也可以用Foo::GetInstance().print();
-    Foo2::GetInstance().print(); // 也可以用Singleton<Foo2>::GetInstance().print();
-    // 两次打印地址相同, 说明是同一个对象
+    // 对于采用单例继承的方式, 两次打印地址相同, 说明是同一个对象, 推荐使用这种方案
+    // 此时如果有 auto f1 = Singleton<Foo>::GetInstance();   则编译器会报错阻止拷贝构造，保证单例
     Singleton<Foo>::GetInstance().printAdress();
     Foo::GetInstance().printAdress();
-    // 两次打印地址相同, 说明是同一个对象
-    Foo2::GetInstance().printAdress();
-    Singleton<Foo2>::GetInstance().printAdress();
+    vector<Foo*> vf;
+    for (int i = 0; i < 3; ++i) {
+        vf.push_back(&Foo::GetInstance());
+    }
+    print_container(vf, "\n");   // 三次打印地址一致且与上述两个地址相同, 说明是同一个对象
+
+    // 对于不继承直接使用单例模式的方式, 两次打印地址相同, 说明是同一个对象
+    // 但这种方式没有阻止单例的拷贝或赋值, 不推荐使用, 会导致单例失效
+    // 例如: auto f2 = Singleton<Foo2>::GetInstance();
+    // 此时f2是一个新的实例，对Singleton<Foo2>::GetInstance()的单例进行了拷贝
+    cout << &Singleton<Foo2>::GetInstance() << endl;
+    cout << &Singleton<Foo2>::GetInstance() << endl;
 
     printWithBlueText("\n--------通用多参数max和min和范围比较函数-----------\n");
 
@@ -97,6 +90,15 @@ int main() {
 
     // 类型推导宏typeof
     cout << typeof(Singleton<Foo>::GetInstance()) << endl;
+
+    printWithBlueText("\n------------运行时断言-------------\n");
+
+    try {
+        assure(1 == 2, "1 != 2, 断言失败!");
+    }
+    catch (const std::exception& e) {
+        cout << e.what() << endl;
+    }
 
     printWithBlueText("\n----------------lyf---------------\n");
 
