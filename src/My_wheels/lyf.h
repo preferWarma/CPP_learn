@@ -13,6 +13,7 @@
 #endif
 
 #define typeof(x) lyf::type_class<decltype(x)>::get()	// 用于获取变量类型的快捷调用宏
+#define m_print(arg) std::cout << #arg << " = " << arg << std::endl;	// 用于快捷打印变量名和值的宏
 
 namespace lyf {
 	using std::cout, std::cin, std::endl;
