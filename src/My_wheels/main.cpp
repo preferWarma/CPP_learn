@@ -1,4 +1,5 @@
 #include "lyf.h"
+#include "MemoryCheck/MemCheck.h"   // 用于内存泄漏检测, 必须放在所有头文件的最后
 
 using namespace lyf;
 using namespace lyf::StringTool;
@@ -19,6 +20,9 @@ void printWithBlueText(string_view str) {
 }
 
 int main() {
+    TRACE_OFF();
+    MEM_ON();
+
     string str = "hello world!";
 
     printWithBlueText("--------字符串分割-----------\n");
@@ -43,8 +47,8 @@ int main() {
     auto res4 = replace_all(str, "world", "WHU");
 
     // 参数打印
-    PrintTool::printDelim = "\n"; // 设置分隔符
-    PrintTool::delimIsPersist = true; // 设置分隔符持久化
+    set_printDelim("\n"); // 设置分隔符
+    set_printDelimPersist(true); // 设置分隔符持久化
     print_args(res2, res3, res4);
 
     printWithBlueText("------beginWith和endWith--------\n");
@@ -99,6 +103,8 @@ int main() {
     catch (const std::exception& e) {
         cout << e.what() << endl;
     }
+
+    MEM_OFF();
 
     printWithBlueText("\n----------------lyf---------------\n");
 
