@@ -162,13 +162,13 @@ namespace lyf {
 
 	namespace PrintTool {
 #if __cplusplus >= 201703L	// C++17以上才编译
+		string printDelim{ " " };
 		/// @brief 用于print_args的分隔符, 默认为空格, 单次使用, 调用后会被重置, 可以通过设置delimIsPersist为true使其持久化
-		static string printDelim{ " " };
-		inline void set_printDelim(const string& delim) { printDelim = delim; }
+		inline void set_printDelim(std::string_view delim = " ") { printDelim = delim; }
 
+		bool delimIsPersist{ false };
 		/// @brief 分隔符是否持久化, 默认不持久化
-		static bool delimIsPersist{ false };
-		inline void set_printDelimPersist(bool flag) { delimIsPersist = flag; }
+		inline void set_printDelimPersist(bool flag = false) { delimIsPersist = flag; }
 
 		/// @brief 形参包遍历打印元素(C++17以后)
 		template<typename T, typename ...Args>

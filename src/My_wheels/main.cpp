@@ -12,7 +12,7 @@ class Foo : public Singleton<Foo> {};
 // 通用单例模式测试类
 class Foo2 {};
 
-void printWithBlueText(string_view str) {
+inline void printWithBlueText(string_view str) {
     // 使用单例模式打印蓝色文本(ConsloeColor没有继承Singleton, 
     // 此方法不推荐使用, 只是为了展示效果简便使用, 推荐使用继承Singleton的方式)
     Singleton<ConsoleColor>::GetInstance()
