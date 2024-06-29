@@ -37,7 +37,8 @@ int main() {
     string pattern = R"(\d{3,4}-\d{7,8})";
     string text = "电话号码: 010-12345678, 021-87654321";
     auto regex_res = regex_match(text, pattern);
-    print_container(regex_res, "\n");
+    print_container(regex_res, "\n");   // 默认打印整个容器
+    print_container(regex_res.begin(), regex_res.end(), "\n"); // 也可以指定迭代器范围打印
 
     printWithBlueText("-----字符串替换与参数打印--------\n");
 
