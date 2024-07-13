@@ -16,4 +16,4 @@ extern bool activeFlag;
 #define MEM_ON() activeFlag = true
 #define MEM_OFF() activeFlag = false
 
-#endif
+#endif  // MEMCHECK_H

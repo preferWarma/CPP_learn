@@ -11,10 +11,10 @@
 
 #ifdef _WIN32
 #include <windows.h>	// Windows下的控制台颜色设置
-#endif
+#endif	// _WIN32
 
 #define typeof(x) lyf::type_class<decltype(x)>::get()	// 用于获取变量类型的快捷调用宏
-#define m_print(arg) std::cout << #arg << " = " << arg << std::endl;	// 用于快捷打印变量名和值的宏
+#define m_print(arg) std::cout << #arg << " = " << arg << std::endl	// 用于快捷打印变量名和值的宏
 
 namespace lyf {
 	using std::cout, std::cin, std::endl;
@@ -276,7 +276,7 @@ namespace lyf {
 		private:
 			HANDLE hConsole;
 		};
-#endif
+#endif	// _WIN32
 
 	};	// namespace PrintTool
 
