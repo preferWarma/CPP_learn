@@ -17,10 +17,9 @@
 #define m_print(arg) std::cout << #arg << " = " << arg << std::endl	// 用于快捷打印变量名和值的宏
 
 namespace lyf {
-	using std::cout, std::cin, std::endl;
-	using std::string, std::vector, std::stringstream;
+	using std::cout, std::endl;
+	using std::string, std::vector;
 	using std::size_t;
-	using std::regex, std::smatch, std::sregex_iterator;
 
 	template<typename Helper>
 	struct cvr_saver {};	// 用于保存变量的const/volatile/reference属性
@@ -46,7 +45,7 @@ namespace lyf {
 		/// @param delim 分隔符
 		/// @return 分隔后的字符串数组, 以vector<string>形式返回
 		vector<string> split(const string& str, const char delim) {
-			stringstream ss(str);
+			std::stringstream ss(str);
 			string s;
 			vector<string> res;
 			res.clear();
@@ -79,6 +78,7 @@ namespace lyf {
 		/// @param pattern 要匹配的正则表达式
 		/// @return 匹配后的字符串数组, 以vector<string>形式返回
 		vector<string> regex_match(const string& str, const string& pattern) {
+			using std::regex, std::smatch, std::sregex_iterator;
 			regex m_pattern{ pattern };
 			auto word_begin = sregex_iterator(str.begin(), str.end(), m_pattern);
 			auto word_end = sregex_iterator();
