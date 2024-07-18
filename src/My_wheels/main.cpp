@@ -1,4 +1,5 @@
 #include "lyf.h"
+#include "StopWatch.h"
 #include "MemoryCheck/MemCheck.h"   // 用于内存泄漏检测, 必须放在所有头文件的最后
 
 using namespace lyf;
@@ -22,6 +23,10 @@ inline void printWithBlueText(string_view str) {
 int main() {
     TRACE_OFF();
     MEM_ON();
+
+    // 设置计时器
+    stopwatch sw(1000); // 计时单位设置为ms
+    sw.start();
 
     string str = "hello world!";
 
@@ -108,6 +113,7 @@ int main() {
     MEM_OFF();
 
     printWithBlueText("\n----------------lyf---------------\n");
+    cout << "Duration Time: " << sw.duration() << " ms" << endl;
 
     return 0;
 }
