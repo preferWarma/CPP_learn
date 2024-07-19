@@ -25,7 +25,7 @@ int main() {
     MEM_ON();
 
     // 设置计时器
-    stopwatch sw(1000); // 计时单位设置为ms
+    stopwatch sw(stopwatch::TimeType::ms); // 计时单位设置为ms
     sw.start();
 
     string str = "hello world!";

@@ -6,19 +6,27 @@
 namespace lyf {
     /// @brief 计时器类声明
     class stopwatch {
-    private:
         using system_clock = std::chrono::system_clock;
         using time_point = system_clock::time_point;
 
+    private:
         bool started{ false };  // 是否已经开始计时
         bool stopped{ false };  // 是否已经停止计时
         double rate{ 1.f };     // 时间比例(默认为1us)
         time_point begin_time;  // 开始时间
         time_point end_time;    // 停止时间
-        size_t tick{ 0ull };  // duration的tick数(纳秒)
+        size_t tick{ 0ull };    // duration的tick数(纳秒)
 
     public:
-        stopwatch(double rate = 1.f);
+        enum class TimeType {
+            ns = 1,
+            us = 1000,
+            ms = 1000000,
+            s = 1000000000
+        };
+        stopwatch(double rate = 1.0);               // 指定rate倍数的ns作为单位
+        stopwatch(TimeType type);                   // 指定时间类型作为单位
+
         virtual ~stopwatch() = default;
         inline void start();
         inline void stop();
@@ -26,29 +34,31 @@ namespace lyf {
         inline double duration();
     };  // class StopWatch
 
+    // 构造函数
     stopwatch::stopwatch(double rate) : rate(rate), started(false), stopped(false), tick(0) {}
+    stopwatch::stopwatch(TimeType type) : stopwatch(static_cast<double>(type)) {}
 
-    void stopwatch::start() {
+    inline void stopwatch::start() {
         reset();
         started = true;
         stopped = false;
         begin_time = system_clock::now();
     }
 
-    void stopwatch::stop() {
+    inline void stopwatch::stop() {
         if (!started) return;
         stopped = true;
         end_time = system_clock::now();
         tick = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - begin_time).count();
     }
 
-    void stopwatch::reset() {
+    inline void stopwatch::reset() {
         started = false;
         stopped = false;
         tick = 0;
     }
 
-    double stopwatch::duration() {
+    inline double stopwatch::duration() {
         // 未启动计时器, 抛出异常
         if (!started) {
             throw std::runtime_error("StopWatch::duration(): Not started yet.");
@@ -59,7 +69,8 @@ namespace lyf {
             stop();
             stopped = true;
         }
-        return static_cast<double>(tick / (rate * 1e3));    // 返回单位为rate倍的us
+        return static_cast<double>(tick / rate);    // 返回单位为rate倍的ns
     }
 }   // namespace lyf
+
 #endif /* !STOPWATCH_H_ */
