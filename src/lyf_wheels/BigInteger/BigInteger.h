@@ -12,22 +12,31 @@ namespace lyf {
     using std::string_view;
 
     class BigInteger {
-        static constexpr int BASE_DIGITS = 8;                             // 一个基数的有效位数(8位十进制数不会在int返回溢出)
-        static constexpr int BASE = 1e8;                                  // 基数(可以视作存储进制)
-        static bool absLess(const vector<int>& a, const vector<int>& b);  // 比较绝对值大小
+        using BaseType = int;
+        static constexpr int BASE_DIGITS = 4;                                       // 一个基数的有效位数(8位十进制数不会在int返回溢出)
+        static constexpr int BASE = 1e4;                                            // 基数(可以视作存储进制)
+
+        // 比较两个数组表示的大整数的值大小(a < b返回true)
+        static bool absLess(const vector<BaseType>& a, const vector<BaseType>& b);
+        // 计算两个数数组表示的大整数的乘积
+        static vector<BaseType> multiply(const vector<BaseType>& a, const vector<BaseType>& b);
+
     private:
-        vector<int> digits;                             // 用于存储大整数(不包括符号位), 逆序存储, 低位在前, 高位在后
+        vector<BaseType> digits;                        // 用于存储大整数(不包括符号位), 逆序存储, 低位在前, 高位在后
         bool isNegative;                                // 是否为负数(符号位)
 
-        void removeLeadingZeros();                      // 移除前导0: 000123 -> 123, 0000 -> 0
+        BigInteger(const vector<BaseType>& digits, bool isNegative)
+            : digits(digits), isNegative(isNegative) {}                     // 私有构造函数
+        void removeLeadingZeros();                                          // 移除前导0: 000123 -> 123, 0000 -> 0
+        void parseFromString(const string& str);                            // 从字符串解析并设置当前对象的值
 
     public:
-        BigInteger() : digits(vector<int>()), isNegative(false) {}          // 默认构造函数
+        BigInteger() : digits(vector<BaseType>()), isNegative(false) {}     // 默认构造函数
         BigInteger(const string& str);                                      // 从字符串构造
+        BigInteger(int32_t num);                                            // 从int构造
         BigInteger(int64_t num);                                            // 从long long构造
         BigInteger(uint64_t num);                                           // 从unsigned long long构造
 
-        void parseFromString(const string& str);                            // 从字符串解析
         string to_string() const;                                           // 转换为字符串
         friend ostream& operator<<(ostream& os, const BigInteger& bigInt);  // 重载输出运算符
         friend istream& operator>>(istream& is, BigInteger& bigInt);        // 重载输入运算符
@@ -38,6 +47,8 @@ namespace lyf {
         BigInteger operator/(const BigInteger& other) const;                // 重载除法运算符
         BigInteger& operator+=(const BigInteger& other);                    // 重载加等于运算符
         BigInteger& operator-=(const BigInteger& other);                    // 重载减等于运算符
+        BigInteger& operator*=(const BigInteger& other);                    // 重载乘等于运算符
+        BigInteger& operator/=(const BigInteger& other);                    // 重载除等于运算符
         BigInteger operator%(const BigInteger& other) const;                // 重载取模运算符
         BigInteger operator-() const;                                       // 重载取负运算符
 
@@ -50,6 +61,14 @@ namespace lyf {
 
         bool isZero() const;                                                // 判断是否为0
 
+        /// @brief 获取符号位(正数返回true, 负数返回false)
+        bool getSign() const { return !isNegative; }                        // 判断是否为负数
+
+
+
+        // 测试时使用
+        const vector<BaseType>& getRawVector() const { return digits; }
+        bool getIsNegative() const { return isNegative; }
     };
 
     // 移除前导0
@@ -79,6 +98,10 @@ namespace lyf {
         this->parseFromString(str);
     }
 
+    inline lyf::BigInteger::BigInteger(int32_t num) {
+        this->parseFromString(std::to_string(num));
+    }
+
     inline BigInteger::BigInteger(int64_t num) {
         this->parseFromString(std::to_string(num));
     }
@@ -97,7 +120,7 @@ namespace lyf {
         }
         res.append(std::to_string(digits.back()));
         for (int i = digits.size() - 2; i >= 0; --i) {
-            res.append(BASE_DIGITS - std::to_string(digits[i]).size(), '0');    // 如果不足9位, 补0
+            res.append(BASE_DIGITS - std::to_string(digits[i]).size(), '0');    // 如果不足BASE_DIGITS位, 补0
             res.append(std::to_string(digits[i]));
         }
         return res;
@@ -148,8 +171,8 @@ namespace lyf {
         }
         // 同号减法，保证a > b
         bool thisLessOther = absLess(digits, other.digits);
-        const vector<int>& a = thisLessOther ? other.digits : digits;
-        const vector<int>& b = thisLessOther ? digits : other.digits;
+        const vector<BaseType>& a = thisLessOther ? other.digits : digits;
+        const vector<BaseType>& b = thisLessOther ? digits : other.digits;
 
         BigInteger res;
         res.isNegative = thisLessOther;
@@ -176,7 +199,9 @@ namespace lyf {
 
     // TODO fft优化
     inline BigInteger BigInteger::operator*(const BigInteger& other) const {
-        return BigInteger();
+        BigInteger&& tmp = BigInteger(multiply(digits, other.digits), isNegative ^ other.isNegative);
+        tmp.removeLeadingZeros();
+        return tmp;
     }
 
     // TODO fft优化
@@ -198,6 +223,20 @@ namespace lyf {
         return *this;
     }
 
+    inline BigInteger& BigInteger::operator*=(const BigInteger& other) {
+        auto res = *this * other;
+        digits = res.digits;
+        isNegative = res.isNegative;
+        return *this;
+    }
+
+    inline BigInteger& BigInteger::operator/=(const BigInteger& other) {
+        auto res = *this / other;
+        digits = res.digits;
+        isNegative = res.isNegative;
+        return *this;
+    }
+
     // TODO 取模运算待定
     inline BigInteger BigInteger::operator%(const BigInteger& other) const {
         return BigInteger();
@@ -210,16 +249,31 @@ namespace lyf {
     }
 
     // 比较绝对值大小, 其中a和b的元素都是非负数, 当a严格小于b时返回true
-    inline bool BigInteger::absLess(const vector<int>& a, const vector<int>& b) {
+    inline bool BigInteger::absLess(const vector<BaseType>& a, const vector<BaseType>& b) {
         if (a.size() != b.size()) {
             return a.size() < b.size();
         }
+        // 从高位到低位比较(逆存储序，低位在前，高位在后)
         for (int i = a.size() - 1; i >= 0; --i) {
             if (a[i] != b[i]) {
                 return a[i] < b[i];
             }
         }
         return false;
+    }
+
+    // TODO 待优化
+    inline vector<BigInteger::BaseType> BigInteger::multiply(const vector<BaseType>& a, const vector<BaseType>& b) {
+        vector<BaseType> res(a.size() + b.size() + 1, 0);
+        // 逐位相乘(基于卷积操作) 低位在前, 高位在后
+        for (size_t i = 0; i < a.size(); ++i) {
+            for (size_t j = 0; j < b.size(); ++j) {
+                res[i + j] += a[i] * b[j];  // 调整基数大小确保不会溢出
+                res[i + j + 1] += res[i + j] / BASE;
+                res[i + j] %= BASE;
+            }
+        }
+        return res;
     }
 
     // 只需要实现小于号, 其他关系运算符都可以通过小于号实现
