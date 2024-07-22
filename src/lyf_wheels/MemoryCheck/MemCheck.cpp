@@ -16,6 +16,7 @@ bool activeFlag = false;
 
 namespace {
     struct Info {
+        size_t size;
         const char* file;
         long line;
     };
@@ -28,7 +29,8 @@ namespace {
             if (!memMap.empty()) {
                 cout << "Leaked memory at: " << endl;
                 for (const auto& [ptr, info] : memMap) {
-                    cout << "\t" << ptr << " (file: " << info.file << ", line: " << info.line << ")\n";
+                    cout << "\t" << ptr << " with size: " << info.size
+                        << " (file: " << info.file << ", line: " << info.line << ")\n";
                 }
             }
             else {
@@ -51,7 +53,7 @@ void* operator new(std::size_t size, const char* file, long line) {
             cout << "Memory limit exceeded!(increase MAXPTRS)" << endl;
             exit(1);
         }
-        memMap[ptr] = { file, line };
+        memMap[ptr] = { size, file, line };
     }
     if (traceFlag) {
         cout << "Allocated " << size << " bytes at adress: " << ptr << " (file: " << file << ", line: " << line << ")" << endl;
