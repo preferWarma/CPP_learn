@@ -53,7 +53,7 @@ void* operator new(std::size_t size, const char* file, long line) {
             cout << "Memory limit exceeded!(increase MAXPTRS)" << endl;
             exit(1);
         }
-        memMap[ptr] = { size, file, line }; // 这里在memMap内部会调用一次全局的new(因为我们已经#undef new了), 所以不会出现递归调用
+        memMap[ptr] = { size, file, line }; // 这里在memMap内部会调用一次全局的new(因为我们已经#undef new了), 所以不会出现递归调用本函数的情况
     }
     if (traceFlag) {
         cout << "Allocated " << size << " bytes at adress: " << ptr << " (file: " << file << ", line: " << line << ")" << endl;
@@ -67,7 +67,7 @@ void* operator new[](std::size_t size, const char* file, long line) {
 
 bool memMap_erase_flag = false; // 针对memMap.erase(ptr)时也会调用一次delete, 所以这里设置一个标志位, 防止再次调用我们重载的delete
 void operator delete(void* ptr) noexcept {
-    if (memMap.find(ptr) != memMap.end()) {
+    if (memMap.find(ptr) != memMap.end()) { // 是我们重载的new分配的内存
         if (traceFlag) {
             cout << "Deallocated memory at adress: " << ptr << endl;
         }
@@ -75,13 +75,14 @@ void operator delete(void* ptr) noexcept {
         memMap_erase_flag = true;
         memMap.erase(ptr);  // 这里内部也调用了delete来删除map中指向ptr的那块儿内存, 会再次调用这个函数, 但是此时里面的指针不在map中
     }
-    else if (activeFlag) {
+    else {  // 不是我们重载的new分配的内存或者重复释放
         if (memMap_erase_flag) {    // 如果此时是由memMap.erase(ptr)调用的delete, 则不再次调用我们重载的delete, 直接free掉
             memMap_erase_flag = false;
             std::free(ptr);
         }
-        else {
+        else if (activeFlag) {
             cout << "Trying to delete unknown ptr: " << ptr << endl;
+            std::free(ptr); // 对于delete未定义指针, 直接利用free报错处理
         }
     }
 }
@@ -95,5 +96,5 @@ void operator delete(void* ptr, std::size_t size) noexcept {
 }
 
 void operator delete[](void* ptr, std::size_t size) noexcept {
-    operator delete(ptr);
+    operator delete[](ptr);
 }
