@@ -20,7 +20,7 @@ namespace {
         long line;
     };
 
-    const size_t MAXPTRS = 10000u;  // 最大指针数
+    const size_t MAXPTRS = 10'0000u;  // 最大指针数
     unordered_map<void*, Info> memMap;    // 用于存储分配的指针信息
 
     struct Sentinel {   // 用于析构时检查内存泄漏
@@ -43,6 +43,9 @@ namespace {
 // 开始重载new和delete
 void* operator new(std::size_t size, const char* file, long line) {
     void* ptr = std::malloc(size);
+    if (ptr == nullptr) {
+        throw std::bad_alloc();
+    }
     if (activeFlag) {
         if (memMap.size() == MAXPTRS) {
             cout << "Memory limit exceeded!(increase MAXPTRS)" << endl;
