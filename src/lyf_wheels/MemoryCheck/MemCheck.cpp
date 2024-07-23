@@ -4,15 +4,20 @@
 #include <cstddef>
 #include <new>
 #include <unordered_map>
+#include <fstream>
+#include "MemCheck.h"
 
 using std::size_t;
 using std::cout, std::endl;
 using std::unordered_map;
+using std::string;
 
 #undef new  // 取消new宏定义
 
-bool traceFlag = true;
-bool activeFlag = false;
+bool __traceFlag = true;
+bool __activeFlag = false;
+std::ofstream __fileStream;
+memCheck::LogType __logType = memCheck::LogType::Just_Cout;
 
 namespace {
     struct Info {
@@ -27,14 +32,30 @@ namespace {
     struct Sentinel {   // 用于析构时检查内存泄漏
         ~Sentinel() {
             if (!memMap.empty()) {
-                cout << "Leaked memory at: " << endl;
+                if (__logType != memCheck::LogType::Just_Cout) {
+                    __fileStream << "Leaked memory at: " << endl;
+                }
+                if (__logType != memCheck::LogType::Just_File) {
+                    cout << "Leaked memory at: " << endl;
+                }
                 for (const auto& [ptr, info] : memMap) {
-                    cout << "\t" << ptr << " with size: " << info.size
-                        << " (file: " << info.file << ", line: " << info.line << ")\n";
+                    if (__logType != memCheck::LogType::Just_Cout) {
+                        __fileStream << "\t" << ptr << " with size: " << info.size
+                            << " (file: " << info.file << ", line: " << info.line << ")\n";
+                    }
+                    if (__logType != memCheck::LogType::Just_File) {
+                        cout << "\t" << ptr << " with size: " << info.size
+                            << " (file: " << info.file << ", line: " << info.line << ")\n";
+                    }
                 }
             }
             else {
-                cout << "No user memory leaks!" << endl;
+                if (__logType != memCheck::LogType::Just_Cout) {
+                    __fileStream << "No user memory leaks!" << endl;
+                }
+                if (__logType != memCheck::LogType::Just_File) {
+                    cout << "No user memory leaks!" << endl;
+                }
             }
         }
     };
@@ -48,15 +69,25 @@ void* operator new(std::size_t size, const char* file, long line) {
     if (ptr == nullptr) {
         throw std::bad_alloc();
     }
-    if (activeFlag) {
+    if (__activeFlag) {
         if (memMap.size() == MAXPTRS) {
-            cout << "Memory limit exceeded!(increase MAXPTRS)" << endl;
+            if (__logType != memCheck::LogType::Just_Cout) {
+                __fileStream << "Memory limit exceeded!(increase MAXPTRS)" << endl;
+            }
+            if (__logType != memCheck::LogType::Just_File) {
+                cout << "Memory limit exceeded!(increase MAXPTRS)" << endl;
+            }
             exit(1);
         }
         memMap[ptr] = { size, file, line }; // 这里在memMap内部会调用一次全局的new(因为我们已经#undef new了), 所以不会出现递归调用本函数的情况
     }
-    if (traceFlag) {
-        cout << "Allocated " << size << " bytes at adress: " << ptr << " (file: " << file << ", line: " << line << ")" << endl;
+    if (__traceFlag) {
+        if (__logType != memCheck::LogType::Just_Cout) {
+            __fileStream << "Allocated " << size << " bytes at adress: " << ptr << " (file: " << file << ", line: " << line << ")" << endl;
+        }
+        if (__logType != memCheck::LogType::Just_File) {
+            cout << "Allocated " << size << " bytes at adress: " << ptr << " (file: " << file << ", line: " << line << ")" << endl;
+        }
     }
     return ptr;
 }
@@ -68,8 +99,13 @@ void* operator new[](std::size_t size, const char* file, long line) {
 bool memMap_erase_flag = false; // 针对memMap.erase(ptr)时也会调用一次delete, 所以这里设置一个标志位, 防止再次调用我们重载的delete
 void operator delete(void* ptr) noexcept {
     if (memMap.find(ptr) != memMap.end()) { // 是我们重载的new分配的内存
-        if (traceFlag) {
-            cout << "Deallocated memory at adress: " << ptr << endl;
+        if (__traceFlag) {
+            if (__logType != memCheck::LogType::Just_Cout) {
+                __fileStream << "Deallocated memory at adress: " << ptr << endl;
+            }
+            if (__logType != memCheck::LogType::Just_File) {
+                cout << "Deallocated memory at adress: " << ptr << endl;
+            }
         }
         std::free(ptr);
         memMap_erase_flag = true;
@@ -80,8 +116,13 @@ void operator delete(void* ptr) noexcept {
             memMap_erase_flag = false;
             std::free(ptr);
         }
-        else if (activeFlag) {
-            cout << "Trying to delete unknown ptr: " << ptr << endl;
+        else if (__activeFlag) {
+            if (__logType != memCheck::LogType::Just_Cout) {
+                __fileStream << "Trying to delete unknown ptr: " << ptr << endl;
+            }
+            if (__logType != memCheck::LogType::Just_File) {
+                cout << "Trying to delete unknown ptr: " << ptr << endl;
+            }
             std::free(ptr); // 对于delete未定义指针, 直接利用free报错处理
         }
     }
