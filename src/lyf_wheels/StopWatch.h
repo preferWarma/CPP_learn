@@ -69,7 +69,7 @@ namespace lyf {
             stop();
             stopped = true;
         }
-        return static_cast<double>(tick / rate);    // 返回单位为rate倍的ns
+        return static_cast<double>(tick) / rate;    // 返回单位为rate倍的ns
     }
 }   // namespace lyf
 

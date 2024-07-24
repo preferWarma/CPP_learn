@@ -83,10 +83,10 @@ void* operator new(std::size_t size, const char* file, long line) {
     }
     if (__traceFlag) {
         if (__logType != memCheck::LogType::Just_Cout) {
-            __fileStream << "Allocated " << size << " bytes at adress: " << ptr << " (file: " << file << ", line: " << line << ")" << endl;
+            __fileStream << "Allocated " << size << " bytes at adress: " << ptr << " (file: " << file << "  line: " << line << ")" << endl;
         }
         if (__logType != memCheck::LogType::Just_File) {
-            cout << "Allocated " << size << " bytes at adress: " << ptr << " (file: " << file << ", line: " << line << ")" << endl;
+            cout << "Allocated " << size << " bytes at adress: " << ptr << " (file: " << file << "  line: " << line << ")" << endl;
         }
     }
     return ptr;
