@@ -96,7 +96,6 @@ void* operator new[](std::size_t size, const char* file, long line) {
     return operator new(size, file, line);
 }
 
-bool memMap_erase_flag = false; // 针对memMap.erase(ptr)时也会调用一次delete, 所以这里设置一个标志位, 防止再次调用我们重载的delete
 void operator delete(void* ptr) noexcept {
     if (memMap.find(ptr) != memMap.end()) { // 是我们重载的new分配的内存
         if (__traceFlag) {
@@ -108,23 +107,10 @@ void operator delete(void* ptr) noexcept {
             }
         }
         std::free(ptr);
-        memMap_erase_flag = true;
         memMap.erase(ptr);  // 这里内部也调用了delete来删除map中指向ptr的那块儿内存, 会再次调用这个函数, 但是此时里面的指针不在map中
     }
     else {  // 不是我们重载的new分配的内存或者重复释放
-        if (memMap_erase_flag) {    // 如果此时是由memMap.erase(ptr)调用的delete, 则不再次调用我们重载的delete, 直接free掉
-            memMap_erase_flag = false;
-            std::free(ptr);
-        }
-        else if (__activeFlag) {
-            if (__logType != memCheck::LogType::Just_Cout) {
-                __fileStream << "Trying to delete unknown ptr: " << ptr << endl;
-            }
-            if (__logType != memCheck::LogType::Just_File) {
-                cout << "Trying to delete unknown ptr: " << ptr << endl;
-            }
-            std::free(ptr); // 对于delete未定义指针, 直接利用free报错处理
-        }
+        std::free(ptr); // 直接释放, 报错信息由free函数自己处理
     }
 }
 
