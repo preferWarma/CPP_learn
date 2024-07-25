@@ -267,6 +267,12 @@ namespace lyf {
 			/// @brief 构造时获取控制台句柄
 			ConsoleColor() : hConsole(GetStdHandle(STD_OUTPUT_HANDLE)) {}
 
+			/// @brief 析构时重置控制台文本颜色和背景颜色(白色文本, 黑色背景), 并关闭控制台句柄
+			~ConsoleColor() {
+				ResetColor();
+				CloseHandle(hConsole);
+			}
+
 			/// @brief 设置控制台文本颜色和背景颜色
 			/// @param textColor 文本颜色
 			/// @param backgroundColor 背景颜色(默认为黑色)
