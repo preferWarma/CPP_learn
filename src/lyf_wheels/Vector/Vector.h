@@ -171,7 +171,7 @@ namespace lyf {
             }
             size_t len = end - begin;
             for (size_t i = 0; i < m_size - len; ++i) {
-                *(begin + i) = std::move(*(end + i));
+                *(begin + i) = *(end + i);
             }
             m_size -= len;
             return begin;
@@ -191,7 +191,7 @@ namespace lyf {
                 reserve(m_capacity == 0 ? 1 : m_capacity * 2);
             }
             for (auto it = this->end(); it != pos; --it) {
-                *it = std::move(*(it - 1));
+                *it = *(it - 1);
             }
             *pos = value;
             ++m_size;
@@ -219,7 +219,6 @@ namespace lyf {
         void reserve(size_t new_capacity) {
             if (new_capacity <= m_capacity) return;
 
-            cout << "从" << m_capacity << "扩容到" << new_capacity << endl;
             m_capacity = new_capacity;
             T* old_data = m_data;
             size_t old_capactiy = m_capacity;
@@ -274,13 +273,15 @@ namespace lyf {
                 size_t old_capacity = m_size;
                 m_data = Allocator{}.allocate(m_capacity);
                 std::construct_at(m_data + m_size, value);    // 先构造新元素，再析构旧元素, 避免新元素是旧元素的引用
-                for (size_t i = 0; i < m_size; ++i) {
-                    std::construct_at(m_data + i, old_data[i]);
+                if (old_data != nullptr) {
+                    for (size_t i = 0; i < m_size; ++i) {
+                        std::construct_at(m_data + i, old_data[i]);
+                    }
+                    Allocator{}.deallocate(old_data, old_capacity);
                 }
-                Allocator{}.deallocate(old_data, old_capacity);
             }
             else {
-                std::construct_at(m_data + m_size++, value);
+                std::construct_at(m_data + m_size, value);
             }
             m_size++;
         }
@@ -291,13 +292,15 @@ namespace lyf {
                 size_t old_capacity = m_size;
                 m_data = Allocator{}.allocate(m_capacity);
                 std::construct_at(m_data + m_size, std::move(value)); // 先构造新元素，再析构旧元素, 避免新元素是旧元素的引用
-                for (size_t i = 0; i < m_size; ++i) {
-                    std::construct_at(m_data + i, old_data[i]);
+                if (old_data != nullptr) {
+                    for (size_t i = 0; i < m_size; ++i) {
+                        std::construct_at(m_data + i, old_data[i]);
+                    }
+                    Allocator{}.deallocate(old_data, old_capacity);
                 }
-                Allocator{}.deallocate(old_data, old_capacity);
             }
             else {
-                std::construct_at(m_data + m_size++, std::move(value));
+                std::construct_at(m_data + m_size, std::move(value));
             }
             m_size++;
         }
