@@ -5,8 +5,8 @@
 #include <string>
 #include <fstream>
 
-void* operator new(std::size_t, const char*, long);
-void* operator new[](std::size_t, const char*, long);
+void* operator new(std::size_t, const char*, unsigned long);
+void* operator new[](std::size_t, const char*, unsigned long);
 
 #define new new(__FILE__, __LINE__)
 
