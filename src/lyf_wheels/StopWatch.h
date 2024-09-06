@@ -2,14 +2,17 @@
 #define STOPWATCH_H_
 
 #include <chrono>
+#include <stdexcept>
+#include <cstddef>
 
 namespace lyf {
     /// @brief 计时器类声明
     class stopwatch {
         using system_clock = std::chrono::system_clock;
         using time_point = system_clock::time_point;
+        using size_t = std::size_t;
 
-    private:
+    protected:
         bool started{ false };  // 是否已经开始计时
         bool stopped{ false };  // 是否已经停止计时
         double rate{ 1.f };     // 时间比例(默认为1us)
@@ -33,6 +36,27 @@ namespace lyf {
         inline void reset();
         inline double duration();
     };  // class StopWatch
+
+    // 对TimeType的输出运算符重载
+    std::ostream& operator<<(std::ostream& os, stopwatch::TimeType type) {
+        switch (type) {
+        case stopwatch::TimeType::ns:
+            os << "ns";
+            break;
+        case stopwatch::TimeType::us:
+            os << "us";
+            break;
+        case stopwatch::TimeType::ms:
+            os << "ms";
+            break;
+        case stopwatch::TimeType::s:
+            os << "s";
+            break;
+        default:
+            break;
+        }
+        return os;
+    }
 
     // 构造函数
     stopwatch::stopwatch(double rate) : rate(rate), started(false), stopped(false), tick(0) {}
@@ -71,6 +95,15 @@ namespace lyf {
         }
         return static_cast<double>(tick) / rate;    // 返回单位为rate倍的ns
     }
+
+
+    class auto_stopwatch : public stopwatch {
+    public:
+        inline auto_stopwatch(double rate = 1.0) : stopwatch(rate) { this->start(); }
+        inline auto_stopwatch(TimeType type) : stopwatch(type) { this->start(); }
+        inline ~auto_stopwatch() { std::cout << "duration time: " << this->duration() << static_cast<TimeType>(rate) << endl; }
+    };   // class auto_stopWatch
+
 }   // namespace lyf
 
 #endif /* !STOPWATCH_H_ */
