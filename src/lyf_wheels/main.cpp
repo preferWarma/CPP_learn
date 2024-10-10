@@ -14,10 +14,7 @@ class Foo : public Singleton<Foo> {};
 class Foo2 {};
 
 inline void printWithBlueText(string_view str) {
-    // 使用单例模式打印蓝色文本(ConsloeColor没有继承Singleton, 
-    // 此方法不推荐使用, 只是为了展示效果简便使用, 推荐使用继承Singleton的方式)
-    Singleton<ConsoleColor>::GetInstance()
-        .printWithColorOneLine(str, ConsoleColor::TextColor::IntenseBlue);
+    cout << "\033[34m" << str << "\033[0m" << endl;
 }
 
 int main() {
@@ -108,6 +105,12 @@ int main() {
     }
     catch (const std::exception& e) {
         cout << e.what() << endl;
+    }
+
+    printWithBlueText("\n------------随机数生成器-------------\n");
+    
+    for (int i = 0; i < 10; ++i) {
+        cout << getRandom(1, 10) << endl;
     }
 
     MEM_OFF();
